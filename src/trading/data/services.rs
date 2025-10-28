@@ -127,7 +127,7 @@ pub fn sync(database: &Database, asset: Asset, timeframe: Timeframe) -> BaseResp
 		let scheduler_arc: Arc<Mutex<JobScheduler>> = Arc::clone(&scheduler);
 		let data_task: Arc<DataSyncArc> = Arc::clone(&data_task);
 
-		let job: JobLocked = Job::new_async("0 */1 * * * *", move |_uuid, _l| {
+		let job: JobLocked = Job::new_async("0 */5 * * * *", move |_uuid, _l| {
 			let scheduler_arc: Arc<Mutex<JobScheduler>> = Arc::clone(&scheduler_arc);
 			let data_task: Arc<DataSyncArc> = Arc::clone(&data_task);
 
