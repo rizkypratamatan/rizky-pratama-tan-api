@@ -48,16 +48,14 @@ pub fn authenticate<T>(request: HttpRequest, access: &Access, data: &T) -> BaseR
 					response.response = "Invalid token".to_string();
 				}
 			} else {
-				response.response =
-					format!("Unauthorized IP address {}", get_client_ip(request.clone()));
+				response.response = format!("Unauthorized IP address {}", get_client_ip(request.clone()));
 			}
 		} else if client.security.access == Access::Private {
 			if authenticate_ip(request.clone(), client.clone()) {
 				response.response = "Request authenticated".to_string();
 				response.result = true;
 			} else {
-				response.response =
-					format!("Unauthorized IP address {}", get_client_ip(request.clone()));
+				response.response = format!("Unauthorized IP address {}", get_client_ip(request.clone()));
 			}
 		} else {
 			response.response = "Access denied".to_string();
@@ -70,10 +68,7 @@ pub fn authenticate<T>(request: HttpRequest, access: &Access, data: &T) -> BaseR
 }
 
 fn authenticate_ip(request: HttpRequest, client: Client) -> bool {
-	client
-		.ip
-		.contains(&get_client_ip(request.clone()).to_string())
-		|| client.ip.contains(&"*".to_string())
+	client.ip.contains(&get_client_ip(request.clone()).to_string()) || client.ip.contains(&"*".to_string())
 }
 
 fn authenticate_path(request: HttpRequest, tokens: Vec<String>) -> bool {
@@ -84,11 +79,7 @@ fn authenticate_timestamp(client: Client, tokens: Vec<String>) -> bool {
 	let current_timestamp: DateTime<Utc> = Utc::now();
 
 	if client.security.timestamp {
-		let difference: TimeDelta = DateTime::parse_from_rfc3339(tokens.get(1).unwrap())
-			.ok()
-			.unwrap_or_default()
-			.to_utc()
-			.signed_duration_since(current_timestamp);
+		let difference: TimeDelta = DateTime::parse_from_rfc3339(tokens.get(1).unwrap()).ok().unwrap_or_default().to_utc().signed_duration_since(current_timestamp);
 
 		difference.num_seconds() <= 5
 	} else {
@@ -99,20 +90,11 @@ fn authenticate_timestamp(client: Client, tokens: Vec<String>) -> bool {
 fn get_client_ip(request: HttpRequest) -> String {
 	let connection_info: Ref<ConnectionInfo> = request.connection_info();
 
-	connection_info
-		.realip_remote_addr()
-		.unwrap_or_default()
-		.to_string()
+	connection_info.realip_remote_addr().unwrap_or_default().to_string()
 }
 
 fn get_client_key(request: HttpRequest) -> String {
-	request
-		.headers()
-		.get("pld-key")
-		.unwrap()
-		.to_str()
-		.unwrap_or_default()
-		.to_string()
+	request.headers().get("pld-key").unwrap().to_str().unwrap_or_default().to_string()
 }
 
 fn get_client_detail(key: &str) -> Client {
@@ -126,8 +108,5 @@ fn get_token(client: Client, map: HashMap<String, Value>) -> Vec<String> {
 	decrypt(
 		&map.get("token").unwrap().as_str().unwrap(),
 		&client.key.to_string(),
-	)
-		.split("~")
-		.map(String::from)
-		.collect()
+	).split("~").map(String::from).collect()
 }

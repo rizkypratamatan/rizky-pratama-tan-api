@@ -19,8 +19,7 @@ pub fn timestamp<T>(
 	user: Option<UserReference>,
 	create: &bool,
 	log_key: Option<String>,
-) -> Document
-	where
+) -> Document where
 		T: Serialize + for<'de> Deserialize<'de>,
 {
 	let mut document: Document = to_document(data).unwrap_or_default();
@@ -37,15 +36,9 @@ pub fn timestamp<T>(
 	let timestamp: Document = to_document(&Timestamp {
 		timestamp: Utc::now(),
 		user: user_reference,
-	})
-		.unwrap_or_default();
+	}).unwrap_or_default();
 
-	if document
-		.get("created")
-		.and_then(Bson::as_document)
-		.unwrap()
-		.get("timestamp")
-		.is_some()
+	if document.get("created").and_then(Bson::as_document).unwrap().get("timestamp").is_some()
 	{
 		document.insert("created", timestamp.clone());
 	}

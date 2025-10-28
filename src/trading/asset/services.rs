@@ -19,21 +19,19 @@ pub async fn create(
 	let authentication: BaseResponse = authenticate(request, &Access::Private, &data.clone());
 
 	if authentication.result {
-		let log: Option<UserLog> =
-			find_one_by_authentication(database.get_ref(), &data.authentication).await;
+		let log: Option<UserLog> = find_one_by_authentication(database.get_ref(), &data.authentication).await;
 
 		if !log.is_none() {
 			match insert_one(
 				database.get_ref(),
 				&Asset {
-					name: data.clone().name,
+					provider: data.provider.clone(),
 					status: data.clone().status,
+					ticker: data.clone().symbol,
 					..Default::default()
 				},
 				Some(log.unwrap_or_default().user),
-			)
-				.await
-			{
+			).await {
 				Ok(_) => {
 					response.response = "Asset has been created successfully".to_string();
 					response.result = true;

@@ -77,10 +77,7 @@ impl EventHandler for Handler {
 
 		let discord: &Discord = Discord::instance();
 
-		let channel_id: u64 = env::var("API_DISCORD_CHANNEL_ID")
-			.unwrap_or_default()
-			.parse::<u64>()
-			.unwrap_or_default();
+		let channel_id: u64 = env::var("API_DISCORD_CHANNEL_ID").unwrap_or_default().parse::<u64>().unwrap_or_default();
 		discord.set_channel_id(&channel_id);
 
 		let context_send: Context = context.clone();
@@ -90,8 +87,7 @@ impl EventHandler for Handler {
 				let message: String = discord.get_message().unwrap_or_default().clone();
 
 				if !message.is_empty() {
-					let discord_channel_id: ChannelId =
-						ChannelId::from(discord.get_channel_id().unwrap_or_default());
+					let discord_channel_id: ChannelId = ChannelId::from(discord.get_channel_id().unwrap_or_default());
 
 					match discord_channel_id.say(&context_send.http, message).await {
 						Ok(_) => {}
@@ -115,8 +111,7 @@ impl EventHandler for Handler {
 			loop {
 				delay.tick().await;
 
-				let discord_channel_id: ChannelId =
-					ChannelId::from(discord.get_channel_id().unwrap_or_default());
+				let discord_channel_id: ChannelId = ChannelId::from(discord.get_channel_id().unwrap_or_default());
 				delete_message(&context_delete, &discord_channel_id).await;
 			}
 		});
@@ -126,18 +121,11 @@ impl EventHandler for Handler {
 async fn delete_message(context: &Context, channel_id: &ChannelId) {
 	let limit: DateTime<Utc> = Utc::now() - chrono::Duration::hours(1);
 
-	match channel_id
-		.messages(context, GetMessages::new().limit(50))
-		.await
-	{
+	match channel_id.messages(context, GetMessages::new().limit(50)).await {
 		Ok(messages) => {
-			let old_messages: Vec<MessageId> = messages
-				.iter()
-				.filter(|message| {
-					message.timestamp < Timestamp::from_unix_timestamp(limit.timestamp()).unwrap()
-				})
-				.map(|message| message.id)
-				.collect();
+			let old_messages: Vec<MessageId> = messages.iter().filter(|message| {
+				message.timestamp < Timestamp::from_unix_timestamp(limit.timestamp()).unwrap()
+			}).map(|message| message.id).collect();
 
 			if !old_messages.is_empty() {
 				match channel_id.delete_messages(context, old_messages).await {
@@ -152,10 +140,7 @@ async fn delete_message(context: &Context, channel_id: &ChannelId) {
 
 pub async fn send_visitor(message: &str) {
 	let discord: &Discord = Discord::instance();
-	let channel_id: u64 = env::var("API_DISCORD_CHANNEL_ID_VISITOR_MESSAGE")
-		.unwrap_or_default()
-		.parse::<u64>()
-		.unwrap_or_default();
+	let channel_id: u64 = env::var("API_DISCORD_CHANNEL_ID_VISITOR_MESSAGE").unwrap_or_default().parse::<u64>().unwrap_or_default();
 	discord.set_channel_id(&channel_id);
 	discord.set_message(message);
 }

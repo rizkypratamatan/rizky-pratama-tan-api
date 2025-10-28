@@ -6,18 +6,16 @@ fn to_datetime<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
 						   D: Deserializer<'de>,
 {
 	let string: &str = Deserialize::deserialize(deserializer)?;
-	let date_time: NaiveDateTime = NaiveDateTime::parse_from_str(string, "%Y-%m-%d %H:%M:%S")
-		.map_err(serde::de::Error::custom)?;
+	let date_time: NaiveDateTime = NaiveDateTime::parse_from_str(string, "%Y-%m-%d %H:%M:%S").map_err(serde::de::Error::custom)?;
 
 	Ok(DateTime::<Utc>::from_naive_utc_and_offset(date_time, Utc))
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct IntradayRequest {
-	pub asset: String,
 	pub from: Option<i64>,
 	pub interval: Option<String>,
-	pub suffix: Option<String>,
+	pub symbol: String,
 	pub to: Option<i64>,
 }
 

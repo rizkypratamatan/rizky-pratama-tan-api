@@ -2,22 +2,16 @@ use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
 #[derive(Clone, Debug, Default, Deserialize, EnumIter, Eq, PartialEq, Serialize)]
-pub enum Analysis {
-	Bearish,
-	Bullish,
+pub enum Gender {
+	Female,
 	#[default]
-	Sideways
+	Male,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, EnumIter, Eq, PartialEq, Serialize)]
-pub enum Timeframe {
-	FifteenMinutes,
-	FiveMinutes,
-	FourHours,
-	OneDay,
-	OneHour,
+pub enum UserType {
+	Administrator,
 	#[default]
-	OneMinute,
-	OneMonth,
-	ThirtyMinutes,
+	Member,
+	Owner,
 }

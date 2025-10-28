@@ -1,7 +1,5 @@
 use crate::integration::eodhd::models::{IntradayRequest, IntradayResponse};
 use crate::integration::services::initialize_params;
-use crate::trading::data::status::models::StatusAsset;
-use crate::trading::data::status::services::get_symbol;
 use log::{error, info};
 use reqwest::Client;
 use std::env;
@@ -13,7 +11,7 @@ pub async fn intraday(params: IntradayRequest) -> Option<Vec<IntradayResponse>> 
 	let url: String = format!(
 		"{}/intraday/{}?api_token={}&fmt=json",
 		env::var("API_EODHD_BASE_URL").unwrap_or_default(),
-		get_symbol(&StatusAsset { asset: params.asset.clone(), suffix: params.suffix.clone() }),
+		params.symbol,
 		env::var("API_EODHD_TOKEN").unwrap_or_default()
 	) + &initialize_params(&params);
 

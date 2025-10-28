@@ -19,7 +19,5 @@ pub async fn index(template: web::Data<Tera>) -> impl Responder {
 	})
 		.await;*/
 
-	HttpResponse::Ok()
-		.content_type(ContentType::html())
-		.body(body)
+	HttpResponse::Ok().content_type(ContentType::html()).body(body)
 }
