@@ -73,7 +73,7 @@ impl EventHandler for Handler {
 	}
 
 	async fn ready(&self, context: Context, ready: Ready) {
-		info!("{} discord bot is ready", ready.user.name.clone());
+		info!("{} discord bot is ready.", ready.user.name.clone());
 
 		let discord: &Discord = Discord::instance();
 

@@ -12,7 +12,7 @@ use std::io::Write;
 
 pub fn decrypt(text: &str, client_key: &str) -> String {
 	let file: String = read_to_string(&format!("clients/{}/private-key.pem", client_key)).unwrap_or_default();
-	let private_key: RsaPrivateKey = RsaPrivateKey::from_pkcs1_pem(&file).expect("Failed to load RSA private key");
+	let private_key: RsaPrivateKey = RsaPrivateKey::from_pkcs1_pem(&file).expect("Failed to load RSA private key.");
 
 	let decoded: Vec<u8> = general_purpose::STANDARD.decode(text).unwrap_or_default();
 	let decrypted: Vec<u8> = private_key.decrypt(Pkcs1v15Encrypt, &decoded).unwrap_or_default();
@@ -22,7 +22,7 @@ pub fn decrypt(text: &str, client_key: &str) -> String {
 
 pub fn encrypt(text: &str, client_key: &str) -> String {
 	let file: String = read_to_string(&format!("clients/{}/public-key.pem", client_key)).unwrap_or_default();
-	let public_key: RsaPublicKey = RsaPublicKey::from_pkcs1_pem(&file).expect("Failed to load RSA public key");
+	let public_key: RsaPublicKey = RsaPublicKey::from_pkcs1_pem(&file).expect("Failed to load RSA public key.");
 
 	let encrypted: Vec<u8> = public_key.encrypt(&mut OsRng, Pkcs1v15Encrypt, text.as_bytes()).unwrap_or_default();
 
@@ -33,12 +33,12 @@ pub fn generate_key(size: &usize) {
 	let private_key: RsaPrivateKey = RsaPrivateKey::new(&mut OsRng, *size).expect("Failed to generate private key");
 	let pem: Zeroizing<String> = private_key.to_pkcs1_pem(LineEnding::LF).unwrap_or_default();
 
-	let mut file: File = File::create("../../../clients/EBFF467D15CAA7DC6B8CAC2586DCF/rsa-private-key.pem").expect("Failed to create RSA private key file");
-	file.write_all(pem.as_bytes()).expect("Failed to write RSA private key file");
+	let mut file: File = File::create("../../../outputs/rsa-private-key.pem").expect("Failed to create RSA private key file.");
+	file.write_all(pem.as_bytes()).expect("Failed to write RSA private key file.");
 
 	let public_key: RsaPublicKey = RsaPublicKey::from(&private_key);
 	let string: String = public_key.to_pkcs1_pem(LineEnding::LF).unwrap_or_default().to_string();
 
-	file = File::create("../../../clients/EBFF467D15CAA7DC6B8CAC2586DCF/rsa-public-key.pem").expect("Failed to create RSA public key file");
-	file.write_all(string.as_bytes()).expect("Failed to write RSA public key file");
+	file = File::create("../../../outputs/rsa-public-key.pem").expect("Failed to create RSA public key file.");
+	file.write_all(string.as_bytes()).expect("Failed to write RSA public key file.");
 }

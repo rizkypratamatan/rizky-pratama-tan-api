@@ -14,9 +14,9 @@ pub enum Timeframe {
 	FifteenMinutes,
 	FiveMinutes,
 	FourHours,
+	#[default]
 	OneDay,
 	OneHour,
-	#[default]
 	OneMinute,
 	OneMonth,
 	ThirtyMinutes,

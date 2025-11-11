@@ -12,12 +12,10 @@ pub struct Data {
 	#[serde(rename = "_id")]
 	pub id: ObjectId,
 	pub analysis: DataAnalysis,
-	pub close: f64,
+	pub change: DataChange,
 	#[serde(with = "chrono_datetime_as_bson_datetime")]
 	pub datetime: DateTime<Utc>,
-	pub high: f64,
-	pub low: f64,
-	pub open: f64,
+	pub price: DataPrice,
 	pub timeframe: Timeframe,
 	pub volume: f64,
 	pub created: Timestamp,
@@ -28,6 +26,21 @@ pub struct Data {
 pub struct DataAnalysis {
 	pub classification: Analysis,
 	pub prediction: Analysis,
+	pub target: f64,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct DataChange {
+	pub amount: f64,
+	pub percentage: f64,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct DataPrice {
+	pub close: f64,
+	pub high: f64,
+	pub low: f64,
+	pub open: f64,
 }
 
 #[derive(Clone, Debug)]

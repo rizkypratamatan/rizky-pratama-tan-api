@@ -18,8 +18,9 @@ pub fn authenticate<T>(request: HttpRequest, access: &Access, data: &T) -> BaseR
 	let mut response: BaseResponse = BaseResponse::default();
 
 	info!(
-        "Request to {} Body: {}",
+        "Request to {}\nHeaders : {:?}\nBody: {}",
         &request.path().to_string(),
+		&request.headers(),
         serde_json::to_string(data).unwrap()
     );
 
@@ -36,32 +37,32 @@ pub fn authenticate<T>(request: HttpRequest, access: &Access, data: &T) -> BaseR
 				if tokens.len() == 2 {
 					if authenticate_path(request.clone(), tokens.clone()) {
 						if authenticate_timestamp(client.clone(), tokens.clone()) {
-							response.response = "Request authenticated".to_string();
+							response.response = "Request authenticated.".to_string();
 							response.result = true;
 						} else {
-							response.response = "Token expired".to_string();
+							response.response = "Token expired.".to_string();
 						}
 					} else {
-						response.response = "Invalid path".to_string();
+						response.response = "Invalid path.".to_string();
 					}
 				} else {
-					response.response = "Invalid token".to_string();
+					response.response = "Invalid token.".to_string();
 				}
 			} else {
-				response.response = format!("Unauthorized IP address {}", get_client_ip(request.clone()));
+				response.response = format!("Unauthorized IP address {}.", get_client_ip(request.clone()));
 			}
 		} else if client.security.access == Access::Private {
 			if authenticate_ip(request.clone(), client.clone()) {
-				response.response = "Request authenticated".to_string();
+				response.response = "Request authenticated.".to_string();
 				response.result = true;
 			} else {
-				response.response = format!("Unauthorized IP address {}", get_client_ip(request.clone()));
+				response.response = format!("Unauthorized IP address {}.", get_client_ip(request.clone()));
 			}
 		} else {
-			response.response = "Access denied".to_string();
+			response.response = "Access denied.".to_string();
 		}
 	} else {
-		response.response = format!("Unauthorized PLD key {}", get_client_key(request.clone()));
+		response.response = format!("Unauthorized PLD key {}.", get_client_key(request.clone()));
 	}
 
 	response

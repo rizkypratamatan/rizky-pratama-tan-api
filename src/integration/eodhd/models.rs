@@ -12,6 +12,30 @@ fn to_datetime<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct ExchangeSymbolRequest {
+	pub code: String,
+	pub token: String,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct ExchangeSymbolResponse {
+	#[serde(rename = "Code")]
+	pub code: String,
+	#[serde(rename = "Country")]
+	pub country: String,
+	#[serde(rename = "Currency")]
+	pub currency: String,
+	#[serde(rename = "Exchange")]
+	pub exchange: String,
+	#[serde(rename = "Isin")]
+	pub isin: Option<String>,
+	#[serde(rename = "Name")]
+	pub name: String,
+	#[serde(rename = "Type")]
+	pub _type: String,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct IntradayRequest {
 	pub from: Option<i64>,
 	pub interval: Option<String>,
@@ -28,5 +52,29 @@ pub struct IntradayResponse {
 	pub high: f64,
 	pub low: f64,
 	pub open: f64,
+	pub volume: f64,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct RealtimeRequest {
+	pub symbol: String,
+	pub s: String,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct RealtimeResponse {
+	pub change: f64,
+	pub change_p: f64,
+	pub close: f64,
+	pub code: String,
+	#[serde(deserialize_with = "to_datetime")]
+	pub datetime: DateTime<Utc>,
+	pub gmtoffset: i64,
+	pub high: f64,
+	pub low: f64,
+	pub open: f64,
+	#[serde(rename = "previousClose")]
+	pub previous_close: f64,
+	pub timestamp: DateTime<Utc>,
 	pub volume: f64,
 }

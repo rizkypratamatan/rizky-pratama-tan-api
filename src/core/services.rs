@@ -6,7 +6,7 @@ use crate::trading::asset::repositories::{create_index, find_by_sync_synchronize
 use crate::trading::data::enums::Timeframe;
 use crate::trading::data::repositories::create_index as create_data_index;
 use crate::trading::data::services::sync;
-use chrono::{TimeZone, Utc};
+use chrono::{DateTime, Datelike, Duration, TimeZone, Utc};
 use dotenvy::from_filename;
 use flexi_logger::filter::{LogLineFilter, LogLineWriter};
 use flexi_logger::{detailed_format, DeferredNow, FileSpec, Logger, WriteMode};
@@ -89,15 +89,16 @@ pub fn initialize_log() {
 pub async fn initialize_task(database: &Database) {
 	create_index(database).await;
 
+	let last: DateTime<Utc> = Utc::now() - Duration::days(3650);
 	let _ = insert_one(
 		database,
 		&Asset {
 			provider: Provider::EODHD,
 			status: Status::Active,
 			sync: AssetSync {
-				last: Utc.with_ymd_and_hms(2020, 1, 1, 0, 0, 0).unwrap(),
+				last: Utc.with_ymd_and_hms(last.year(), 1, 1, 0, 0, 0).unwrap(),
 				synchronized: false,
-				symbol: "XAUUSD.FOREX".to_string(),
+				symbol: "C:XAUUSD".to_string(),
 			},
 			ticker: "XAUUSD".to_string(),
 			..Default::default()
@@ -106,8 +107,7 @@ pub async fn initialize_task(database: &Database) {
 	)
 		.await;
 
-	let assets: Option<Vec<Asset>> =
-		find_by_sync_synchronized(database, &false).await;
+	let assets: Option<Vec<Asset>> = find_by_sync_synchronized(database, &false).await;
 
 	if !assets.is_none() {
 		for asset in assets.unwrap_or_default() {

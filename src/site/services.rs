@@ -18,7 +18,7 @@ pub async fn generate_rsa_key(
 		let valid_size: Vec<u16> = vec![1024, 2048, 4096];
 
 		if valid_size.contains(&data.size) {
-			response.response = "RSA Key Generated".to_string();
+			response.response = "RSA Key Generated.".to_string();
 			response.result = true;
 		}
 	} else {
@@ -46,7 +46,7 @@ pub async fn send_message(
 		);
 		send_visitor(&format!("[{}]\n\n\n{}", application_name, body)).await;
 
-		response.response = "Message sent successfully".to_string();
+		response.response = "Message sent successfully.".to_string();
 		response.result = true;
 	} else {
 		return HttpResponse::Unauthorized().json(authentication);

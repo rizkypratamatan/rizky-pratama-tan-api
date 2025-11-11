@@ -1,42 +1,47 @@
-use crate::integration::eodhd::models::{IntradayRequest, IntradayResponse};
-use crate::integration::services::initialize_params;
-use log::{error, info};
+use crate::integration::eodhd::models::{ExchangeSymbolRequest, ExchangeSymbolResponse, IntradayRequest, IntradayResponse, RealtimeRequest, RealtimeResponse};
+use crate::integration::services::{get_request, initialize_params};
+use log::info;
 use reqwest::Client;
 use std::env;
 
-pub async fn intraday(params: IntradayRequest) -> Option<Vec<IntradayResponse>> {
-	let mut result: Option<Vec<IntradayResponse>> = None;
+pub async fn exchange_symbol(params: &ExchangeSymbolRequest) -> Option<Vec<ExchangeSymbolResponse>> {
+	let client: Client = Client::new();
+	let url: String = format!(
+		"{}/exchange-symbol-list/{}?api_token={}&fmt=json",
+		env::var("API_EODHD_BASE_URL").unwrap_or_default(),
+		params.code,
+		env::var("API_EODHD_TOKEN").unwrap_or_default()
+	) + &initialize_params(params);
 
+	info!("Request to {}\nHeaders : \nBody : ", url);
+
+	get_request(&client, &url).await
+}
+
+pub async fn intraday(params: &IntradayRequest) -> Option<Vec<IntradayResponse>> {
 	let client: Client = Client::new();
 	let url: String = format!(
 		"{}/intraday/{}?api_token={}&fmt=json",
 		env::var("API_EODHD_BASE_URL").unwrap_or_default(),
 		params.symbol,
 		env::var("API_EODHD_TOKEN").unwrap_or_default()
-	) + &initialize_params(&params);
+	) + &initialize_params(params);
 
 	info!("Request to {}\nHeaders : \nBody : ", url);
 
-	match client.get(url.clone()).send().await {
-		Ok(response) => {
-			let log: String = format!(
-				"Response from {}\nStatus: {}\nHeaders : {:?}\n",
-				url,
-				response.status(),
-				response.headers().clone()
-			);
-			let response_text: String = response.text().await.unwrap();
-			info!("{}Body : {}", log, response_text);
+	get_request(&client, &url).await
+}
 
-			match serde_json::from_str(&response_text) {
-				Ok(data) => {
-					result = Some(data);
-				}
-				Err(err) => error!("{:?}", err),
-			}
-		}
-		Err(err) => error!("{:?}", err),
-	}
+pub async fn realtime(params: &RealtimeRequest) -> Option<Vec<RealtimeResponse>> {
+	let client: Client = Client::new();
+	let url: String = format!(
+		"{}/real-time/{}?api_token={}&fmt=json",
+		env::var("API_EODHD_BASE_URL").unwrap_or_default(),
+		params.symbol,
+		env::var("API_EODHD_TOKEN").unwrap_or_default()
+	) + &initialize_params(params);
 
-	result
+	info!("Request to {}\nHeaders : \nBody : ", url);
+
+	get_request(&client, &url).await
 }

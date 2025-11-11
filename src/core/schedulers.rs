@@ -34,7 +34,7 @@ pub fn scheduler_eodhd_intraday_1m(database: &Database) {
 							info!("{}", response.response);
 						}
 
-						info!("Trading data get_realtime executed");
+						info!("Trading data get_realtime executed.");
 					}
 				})
 			}).unwrap(),
